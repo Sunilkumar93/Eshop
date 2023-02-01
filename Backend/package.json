@@ -4,7 +4,8 @@
   "description": "this is backend of e shop ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev":"nodemon index.js"
   },
   "author": "sunil kumar",
   "license": "ISC",
