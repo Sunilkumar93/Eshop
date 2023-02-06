@@ -1,5 +1,5 @@
 const { catchAsyncError } = require("../middleware/catchAsyncError.middleware");
-const { ProductModel } = require("../Models/Product.model.js");
+const { ProductModel } = require("../Models/product.model");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 // Create A Product
 
