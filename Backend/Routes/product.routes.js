@@ -4,12 +4,16 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  getSingleProduct,
 } = require("../Controlers/product.controler");
 
 const productRouter = express.Router();
 
 //Get All Product
 productRouter.get("/", getAllProducts);
+
+//Get single Product
+productRouter.get("/:id", getSingleProduct);
 
 // Create A Product -Admin
 productRouter.post("/new", createProduct);
