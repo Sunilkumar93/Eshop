@@ -26,7 +26,7 @@ class ApiFeature {
     return this;
   }
   pagenation(perPage) {
-    let currentPage = this.queryStr.page || 1;
+    let currentPage = +this.queryStr.page || 1;
     let skip = perPage * (currentPage - 1);
     this.query = this.query.limit(perPage).skip(skip);
 
