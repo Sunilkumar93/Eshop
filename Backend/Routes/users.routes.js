@@ -6,6 +6,8 @@ const {
   updateUser,
   deleteUser,
   logoutUser,
+  forgotPassword,
+  resetPassord,
 } = require("../Controlers/user.controler");
 
 const userRouter = express.Router();
@@ -27,5 +29,11 @@ userRouter.patch("/:id", updateUser);
 
 // delete User -Admin
 userRouter.delete("/:id", deleteUser);
+
+// forgot Password 
+userRouter.post("/forgotpassword",forgotPassword);
+
+// resetPassword
+userRouter.patch("/resetpassword/:token",resetPassord);
 
 module.exports = { userRouter };

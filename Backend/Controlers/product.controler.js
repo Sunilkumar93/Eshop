@@ -6,7 +6,7 @@ const { ErrorHandler } = require("../utils/ErrorHandler");
 
 const createProduct = catchAsyncError(async (req, res, next) => {
   const payload = req.body;
-
+  payload.user=req.user.id;
   const product = new ProductModel(payload);
 
   await product.save();
