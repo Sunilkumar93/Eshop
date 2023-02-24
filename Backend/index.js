@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const cookieParser=require("cookie-parser")
 const { errorHandler } = require("./middleware/errorhandler.middleware");
 const { connect } = require("./Configs/db");
 const { productRouter } = require("./Routes/product.routes");
@@ -13,6 +14,8 @@ const app = express();
 //use external middleware
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
+
 
 //use all routes here
 app.use("/api/v1/product", productRouter);

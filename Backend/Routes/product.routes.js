@@ -6,11 +6,12 @@ const {
   deleteProduct,
   getSingleProduct,
 } = require("../Controlers/product.controler");
+const { Autherise } = require("../middleware/autherise.middleware");
 
 const productRouter = express.Router();
 
 //Get All Product
-productRouter.get("/", getAllProducts);
+productRouter.get("/",Autherise, getAllProducts);
 
 //Get single Product
 productRouter.get("/:id", getSingleProduct);
