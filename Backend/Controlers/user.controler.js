@@ -13,7 +13,7 @@ const getAllUsers = catchAsyncError(async (req, res, next) => {
 const regiserUser = catchAsyncError(async (req, res, next) => {
   const user=new UserModel(req.body);
   const userSaved=await user.save();
-  res.status(201).send({ error: true, message: "user added success" });
+  res.status(201).send({ error: false, message: "user Registration Success" });
 });
 
 // Login User
