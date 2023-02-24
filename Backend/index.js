@@ -16,7 +16,7 @@ app.use(cors());
 
 //use all routes here
 app.use("/api/v1/product", productRouter);
-app.use("/api/vi/user", userRouter);
+app.use("/api/v1/user", userRouter);
 
 app.listen(port, async () => {
   try {
