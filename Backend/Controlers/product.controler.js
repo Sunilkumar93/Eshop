@@ -28,7 +28,7 @@ const getAllProducts = catchAsyncError(async (req, res, next) => {
   res.status(200).send({ error: false, data: products, total });
 });
 
-// Get All Product
+// Get Single Product
 const getSingleProduct = catchAsyncError(async (req, res, next) => {
   const id = req.params.id;
   const product = await ProductModel.findById(id);
