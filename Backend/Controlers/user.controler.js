@@ -14,6 +14,44 @@ const getAllUsers = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Get User Details
+
+const getUserDetails = catchAsyncError(async (req, res, next) => {
+  const user = await UserModel.findById(req.user.id);
+
+  res.status(200).send({
+    error: false,
+    user,
+  });
+});
+
+// Upadate Password
+
+const updatePassword = catchAsyncError(async (req, res, next) => {
+  const user = await UserModel.findById(req.user.id).select("+password");
+
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return next(new ErrorHandler("Please Enter All Details", 400));
+  }
+
+  const isPasswordMatched = await user.comparePassword(oldPassword);
+
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Please Enter Valid Password", 404));
+  }
+
+  if (newPassword !== confirmPassword) {
+    return next(new ErrorHandler("Password Should Be Same", 400));
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  sendToken(user, 200, res);
+});
+
 // Regiter User
 const regiserUser = catchAsyncError(async (req, res, next) => {
   const user = new UserModel(req.body);
@@ -57,7 +95,23 @@ const logoutUser = catchAsyncError(async (req, res, next) => {
 });
 
 // Update User
-const updateUser = catchAsyncError(async (req, res, next) => {});
+const updateUser = catchAsyncError(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  const user = await UserModel.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).send({
+    error: false,
+    message: "Profile Upadated Success",
+  });
+});
 
 // Delete User
 const deleteUser = catchAsyncError(async (req, res, next) => {});
@@ -101,8 +155,10 @@ const forgotPassword = catchAsyncError(async (req, res, next) => {
 
 //Reset Password
 const resetPassord = catchAsyncError(async (req, res, next) => {
-  if(!req.body.password||!req.body.confirmPassword){
-    return next(new ErrorHandler("Please Enter Password & ConfirmPassord",400));
+  if (!req.body.password || !req.body.confirmPassword) {
+    return next(
+      new ErrorHandler("Please Enter Password & ConfirmPassord", 400)
+    );
   }
   const resetPasswordToken = crypto
     .createHash("sha256")
@@ -137,11 +193,13 @@ const resetPassord = catchAsyncError(async (req, res, next) => {
 
 module.exports = {
   getAllUsers,
+  getUserDetails,
   deleteUser,
   loginUser,
   regiserUser,
   updateUser,
   logoutUser,
   forgotPassword,
-  resetPassord
+  resetPassord,
+  updatePassword,
 };

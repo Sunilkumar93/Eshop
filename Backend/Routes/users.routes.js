@@ -8,12 +8,19 @@ const {
   logoutUser,
   forgotPassword,
   resetPassord,
+  getUserDetails,
+  updatePassword,
 } = require("../Controlers/user.controler");
+const { Autherise } = require("../middleware/autherise.middleware");
 
 const userRouter = express.Router();
 
 // Get All User -Admin
 userRouter.get("/", getAllUsers);
+
+// Get User Details
+
+userRouter.get("/me", Autherise, getUserDetails);
 
 // Register User
 userRouter.post("/register", regiserUser);
@@ -22,18 +29,22 @@ userRouter.post("/register", regiserUser);
 userRouter.post("/login", loginUser);
 
 //Logout User
-userRouter.get("/logout",logoutUser)
+userRouter.get("/logout", logoutUser);
 
-// Update User -Admin
-userRouter.patch("/:id", updateUser);
+// Update User
+userRouter.patch("/update/profile", Autherise, updateUser);
+
+// Update User Role
 
 // delete User -Admin
 userRouter.delete("/:id", deleteUser);
 
-// forgot Password 
-userRouter.post("/forgotpassword",forgotPassword);
+// forgot Password
+userRouter.post("/forgotpassword", forgotPassword);
 
 // resetPassword
-userRouter.patch("/resetpassword/:token",resetPassord);
+userRouter.patch("/resetpassword/:token", resetPassord);
+
+userRouter.patch("/update/password", Autherise, updatePassword);
 
 module.exports = { userRouter };
