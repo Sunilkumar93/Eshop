@@ -17,4 +17,13 @@ req.user=user;
 next();
 })
 
-module.exports={Autherise}
+const AutheriseRole=(...roles)=>{
+  return (req,res,next)=>{
+    if(!roles.includes(req.user.role)){
+        return next(new ErrorHandler(`Role : ${req.user.role} Is Not Autherised To Do This Task`,401))
+    }
+    next();
+  }
+}
+
+module.exports={Autherise,AutheriseRole}
