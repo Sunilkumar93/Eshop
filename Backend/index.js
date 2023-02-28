@@ -6,6 +6,7 @@ const { errorHandler } = require("./middleware/errorhandler.middleware");
 const { connect } = require("./Configs/db");
 const { productRouter } = require("./Routes/product.routes");
 const { userRouter } = require("./Routes/users.routes");
+const { orderRouter } = require("./Routes/order.routes");
 
 const port = process.env.PORT || 8080;
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 //use all routes here
 app.use("/api/v1/product", productRouter);
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/order", orderRouter);
 
 app.listen(port, async () => {
   try {

@@ -5,12 +5,28 @@ const { sendEmail } = require("../utils/sendEmail");
 const { sendToken } = require("../utils/sendToken");
 const crypto = require("crypto");
 
-// Get All Users
+// Get All Users  --Admin
 const getAllUsers = catchAsyncError(async (req, res, next) => {
   const users = await UserModel.find();
+  const total = await UserModel.countDocuments();
   res.status(200).send({
     error: false,
     users,
+    total,
+  });
+});
+// Get Single Users  --Admin
+const getSingleUsers = catchAsyncError(async (req, res, next) => {
+  const user = await UserModel.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User Not Found With This ID: ${req.params.id}`)
+    );
+  }
+  res.status(200).send({
+    error: false,
+    user,
   });
 });
 
@@ -112,9 +128,43 @@ const updateUser = catchAsyncError(async (req, res, next) => {
     message: "Profile Upadated Success",
   });
 });
+// Update Role --Admin
+const updateRole = catchAsyncError(async (req, res, next) => {
+  const newUserData = {
+    role: req.body.role,
+  };
 
-// Delete User
-const deleteUser = catchAsyncError(async (req, res, next) => {});
+  const user = await UserModel.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User Not Found With Id :${req.params.id}`, 404)
+    );
+  }
+
+  res.status(200).send({
+    error: false,
+    message: "User Role  Upadated Success",
+  });
+});
+
+// Delete User  --Admin
+const deleteUser = catchAsyncError(async (req, res, next) => {
+  const user = await UserModel.findByIdAndDelete(req.params.id);
+  if (!user) {
+    return next(
+      new ErrorHandler(`User Not Found with ID :${req.params.id}`, 404)
+    );
+  }
+  res.status(200).send({
+    error: false,
+    message: `User Deleted Success With ID :${req.params.id}`,
+  });
+});
 
 // Forgot Password
 
@@ -193,6 +243,7 @@ const resetPassord = catchAsyncError(async (req, res, next) => {
 
 module.exports = {
   getAllUsers,
+  getSingleUsers,
   getUserDetails,
   deleteUser,
   loginUser,
@@ -202,4 +253,5 @@ module.exports = {
   forgotPassword,
   resetPassord,
   updatePassword,
+  updateRole,
 };

@@ -6,7 +6,7 @@ const { ErrorHandler } = require("../utils/ErrorHandler");
 
 const createProduct = catchAsyncError(async (req, res, next) => {
   const payload = req.body;
-  payload.user=req.user.id;
+  payload.user = req.user.id;
   const product = new ProductModel(payload);
 
   await product.save();
@@ -74,10 +74,89 @@ const deleteProduct = catchAsyncError(async (req, res, next) => {
   });
 });
 
+const createProductReview = catchAsyncError(async (req, res, next) => {
+  const { rating, comment, productId } = req.body;
+  const review = {
+    user: req.user._id,
+    comment,
+    name: req.user.name,
+    rating: Number(rating),
+  };
+
+  const product = await ProductModel.findById(productId);
+
+  const isReviewed = product.reviews.find(
+    (rev) => rev.user.toString() == req.user._id.toString()
+  );
+
+  if (isReviewed) {
+    product.reviews.forEach((rev) => {
+      if (rev.user.toString() == req.user._id.toString()) {
+        (rev.rating = rating), (rev.comment = comment);
+      }
+    });
+  } else {
+    product.reviews.push(review);
+    product.numOfReviews = product.reviews.length;
+  }
+
+  let avg = 0;
+  product.reviews.forEach((rev) => (avg += rev.rating));
+  product.ratings = avg / product.reviews.length;
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).send({
+    error: false,
+    message: "Review Added Success",
+  });
+});
+
+// Get All Review
+
+const getAllReview = catchAsyncError(async (req, res, next) => {
+  const product = await ProductModel.findById(req.query.id);
+
+  if (!product) {
+    return next(new ErrorHandler("Product Not Found", 404));
+  }
+  res.status(200).send({
+    error: false,
+    reviews: product?.reviews,
+    total: product?.reviews.length,
+  });
+});
+
+// Delete Review
+
+const deleteReview = catchAsyncError(async (req, res, next) => {
+  const product = await ProductModel.findById(req.query.productId);
+
+  if (!product) {
+    return next(new ErrorHandler("Product Not Found", 404));
+  }
+  const reviews = product.reviews.filter(
+    (rev) => rev._id.toString() !== req.query.id.toString()
+  );
+  let avg = 0;
+  reviews.forEach((rev) => (avg += rev.rating));
+  product.ratings = avg / reviews.length;
+  product.reviews = reviews;
+  product.numOfReviews = reviews.length;
+  await product.save({ validateBeforeSave: false });
+  res.status(200).send({
+    error: false,
+    message: "review deleted success",
+  });
+});
+
 module.exports = {
   getAllProducts,
   createProduct,
   updateProduct,
   deleteProduct,
   getSingleProduct,
+  createProductReview,
+  getAllReview,
+  deleteReview,
 };
